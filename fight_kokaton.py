@@ -159,6 +159,9 @@ def main():
     bird = Bird(3, (900, 400))
     bombs = [Bomb() for i in range(NUM_OF_BOMBS)]
     beam = None
+    fonto  = pg.font.Font(None, 80)
+    score = 0
+    txt = fonto.render(str(score), True, (0, 0, 0))
 
     tmr = 0
     while True:
@@ -166,9 +169,11 @@ def main():
             if event.type == pg.QUIT:
                 return
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-                beam = Beam(bird)
+                beams += Beam(bird)
+
         tmr += 1
         screen.blit(bg_img, [0, 0])
+        screen.blit(txt, [300,200])
 
         for bomb in bombs:
             bomb.update(screen)
@@ -185,11 +190,14 @@ def main():
         if beam is not None:
             beam.update(screen)
             for i, bomb in enumerate(bombs):
-                if bomb is not None and beam._rct.colliderect(bomb._rct):
+                if bomb is not None and beams._rct.colliderect(bomb._rct):
                     beam = None
                     del bombs[i]
+                    score += 1
+
                     bird.change_img(6, screen)
                     break
+                        
 
         pg.display.update()
         clock.tick(1000)
