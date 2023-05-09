@@ -104,7 +104,7 @@ class Bomb:
     _dires = [-1, 0, 1]
     def __init__(self):
         """
-        引数に基づき爆弾円Surfaceを生成する
+        爆弾円Surfaceを生成する
         """
         rad = random.randint(10, 50)
         color = random.choice(self._colors)
