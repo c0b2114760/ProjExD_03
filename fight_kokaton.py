@@ -150,6 +150,23 @@ class Beam:
         screen.blit(self._img, self._rct)
 
 
+class Score:
+    def __init__(self):
+        self.txt = pg.font.Font(None, 80)
+        self.color = (0, 0 ,0)
+        self.score = 0
+        self.img = self.txt.render(str(self.score), True, self.color)
+        self._rct = self.img.get_rect()
+        self._rct.center = 100, HEIGHT-50
+
+    def score_count(self):
+        self.score += 1
+
+    def update(self, screen: pg.surface):
+        self.img = self.txt.render(str(self.score), True, self.color)
+        screen.blit(self.img, self._rct)
+
+
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -159,27 +176,24 @@ def main():
     bird = Bird(3, (900, 400))
     bombs = [Bomb() for i in range(NUM_OF_BOMBS)]
     beam = None
-    fonto  = pg.font.Font(None, 80)
-    score = 0
-    txt = fonto.render(str(score), True, (0, 0, 0))
-
+    score = Score()
     tmr = 0
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-                beams += Beam(bird)
+                beam = Beam(bird)
 
         tmr += 1
         screen.blit(bg_img, [0, 0])
-        screen.blit(txt, [300,200])
 
         for bomb in bombs:
             bomb.update(screen)
             if bird._rct.colliderect(bomb._rct):
             # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
-                bird.change_img(8, screen)
+                bird.change_img(8, screen)                                    
+                score.update(screen)
                 pg.display.update()
                 time.sleep(1)
                 return
@@ -190,15 +204,15 @@ def main():
         if beam is not None:
             beam.update(screen)
             for i, bomb in enumerate(bombs):
-                if bomb is not None and beams._rct.colliderect(bomb._rct):
+                if bomb is not None and beam._rct.colliderect(bomb._rct):
                     beam = None
                     del bombs[i]
-                    score += 1
-
                     bird.change_img(6, screen)
+                    score.score_count()
                     break
                         
 
+        score.update(screen)
         pg.display.update()
         clock.tick(1000)
 
